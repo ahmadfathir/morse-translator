@@ -151,5 +151,5 @@ To contribute or report bugs:
 
 ## License
 
-This script is intended for educational and CTF (Capture The Flag) purposes.
+This script is intended for educational and IDN CTF (Capture The Flag) purposes.
 
