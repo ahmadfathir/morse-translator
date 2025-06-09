@@ -31,41 +31,35 @@ pip install pydub
 ### 1. File Preparation
 
 Ensure you have a WAV audio file containing Morse code. The file should:
-- Format: WAV
-- Contain beeps of different durations (short for dots, long for dashes)
-- Have clear pauses between letters and words
+- **Format**: WAV only (other formats not supported)
+- **Content**: Clear beeps of different durations (short for dots, long for dashes)
+- **Quality**: Good audio quality with distinct pauses between letters and words
+- **Channel**: Will be automatically converted to mono during processing
 
 ### 2. Running the Script
 
-#### Method 1: Direct Edit in Script
-
-Edit line 67 in `translate-morse.py`
-
-```python
-file_path = "your_file_name.wav"  # Replace with the correct file path
-```
-
-Then run:
+The script uses interactive input for file selection. Simply run:
 
 ```bash
 python translate-morse.py
 ```
 
-#### Method 2: Modify for Dynamic Input
+You'll see the ASCII art header and then be prompted:
 
-You can modify the script to accept file input dynamically:
-
-```python
-import sys
-
-if len(sys.argv) != 2:
-    print("Usage: python translate-morse.py <file.wav>")
-    sys.exit(1)
-
-file_path = sys.argv[1]
+```
+Masukkan path file audio Morse (.wav):
 ```
 
+Enter the path to your WAV file. Examples:
+- `morse.wav` (file in current directory)
+- `/home/user/audio/morse.wav` (absolute path)
+- `../audio/morse.wav` (relative path)
+
 ### 3. Output
+
+The script will display:
+1. **Kode Morse**: Raw morse code with dots (.) and dashes (-)
+2. **Hasil Decode**: Final translated text in uppercase
 
 The script will produce two outputs:
 1. **Morse Code**: Representation of dot (.) and dash (-) symbols
