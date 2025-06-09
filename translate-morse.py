@@ -1,7 +1,21 @@
 from pydub import AudioSegment
 from pydub.silence import detect_nonsilent
 
-# Fungsi untuk menerjemahkan kode Morse ke teks biasa
+# ASCII Art Header
+HEADER = """
+#  ▗▖  ▗▖ ▗▄▖ ▗▄▄▖  ▗▄▄▖▗▄▄▄▖▗▄▄▄▖▗▄▄▖  ▗▄▖ ▗▖  ▗▖ ▗▄▄▖▗▖    ▗▄▖▗▄▄▄▖▗▄▖ ▗▄▄▖
+#  ▐▛▚▞▜▌▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌     █  ▐▌ ▐▌▐▌ ▐▌▐▛▚▖▐▌▐▌   ▐▌   ▐▌ ▐▌ █ ▐▌ ▐▌▐▌ ▐▌
+#  ▐▌  ▐▌▐▌ ▐▌▐▛▀▚▖ ▝▀▚▖▐▛▀▀▘  █  ▐▛▀▚▖▐▛▀▜▌▐▌ ▝▜▌ ▝▀▚▖▐▌   ▐▛▀▜▌ █ ▐▌ ▐▌▐▛▀▚▖
+#  ▐▌  ▐▌▝▚▄▞▘▐▌ ▐▌▗▄▄▞▘▐▙▄▄▖  █  ▐▌ ▐▌▐▌ ▐▌▐▌  ▐▌▗▄▄▞▘▐▙▄▄▖▐▌ ▐▌ █ ▝▚▄▞▘▐▌ ▐▌
+"""
+
+CREDITS = """
+    Script by           :  Ahmad Fathir
+    Version             :  1.0
+    Codename            :  lalatx1
+    Follow me on Github :  @ahmadfathir
+"""
+
 def morse_to_text(morse_code):
     morse_dict = {
         'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..',
@@ -26,45 +40,59 @@ def morse_to_text(morse_code):
         decoded_words.append("".join(decoded_letters))
     return " ".join(decoded_words)
 
-# Fungsi utama untuk memproses file WAV menjadi teks
 def decode_morse_wav(file_path):
-    # Load dan normalisasi audio
-    audio = AudioSegment.from_wav(file_path)
-    audio = audio.set_channels(1)
-    audio = audio.apply_gain(-audio.max_dBFS)
+    try:
+        audio = AudioSegment.from_wav(file_path)
+        audio = audio.set_channels(1)
+        audio = audio.apply_gain(-audio.max_dBFS)
 
-    # Deteksi bagian tidak diam (bunyi)
-    nonsilent_ranges = detect_nonsilent(audio, min_silence_len=50, silence_thresh=-40)
+        nonsilent_ranges = detect_nonsilent(audio, min_silence_len=50, silence_thresh=-40)
 
-    # Ambil durasi beep dan jeda
-    durations = []
-    for i in range(len(nonsilent_ranges)):
-        start, end = nonsilent_ranges[i]
-        durations.append(("beep", end - start))
-        if i + 1 < len(nonsilent_ranges):
-            next_start = nonsilent_ranges[i + 1][0]
-            durations.append(("silence", next_start - end))
+        durations = []
+        for i in range(len(nonsilent_ranges)):
+            start, end = nonsilent_ranges[i]
+            durations.append(("beep", end - start))
+            if i + 1 < len(nonsilent_ranges):
+                next_start = nonsilent_ranges[i + 1][0]
+                durations.append(("silence", next_start - end))
 
-    # Konversi ke simbol Morse
-    morse_code = ""
-    for kind, duration in durations:
-        if kind == "beep":
-            if duration < 100:
-                morse_code += "."
-            else:
-                morse_code += "-"
-        elif kind == "silence":
-            if 150 <= duration < 300:
-                morse_code += " "      # antar huruf
-            elif duration >= 300:
-                morse_code += "   "    # antar kata
+        morse_code = ""
+        for kind, duration in durations:
+            if kind == "beep":
+                if duration < 100:
+                    morse_code += "."
+                else:
+                    morse_code += "-"
+            elif kind == "silence":
+                if 150 <= duration < 300:
+                    morse_code += " "
+                elif duration >= 300:
+                    morse_code += "   "
 
-    # Terjemahkan ke teks biasa
-    decoded_text = morse_to_text(morse_code)
-    return morse_code, decoded_text
+        decoded_text = morse_to_text(morse_code)
+        return morse_code, decoded_text
+    except Exception as e:
+        print(f"Error: {e}")
+        return None, None
 
-# Contoh penggunaan
-file_path = "morse.wav"  # Ganti dengan path file yang sesuai
-morse, result = decode_morse_wav(file_path)
-print("Kode Morse:", morse)
-print("Hasil Decode:", result)
+def main():
+    # Display header and credits
+    print(HEADER)
+    print(CREDITS)
+    print("\n" + "="*50 + "\n")
+
+    # Get user input
+    file_path = input("Masukkan path file audio Morse (.wav): ").strip()
+
+    # Process file
+    morse, result = decode_morse_wav(file_path)
+
+    # Display results
+    if morse and result:
+        print("\nKode Morse:", morse)
+        print("Hasil Decode:", result)
+    else:
+        print("Gagal memproses file. Pastikan path benar dan format file adalah WAV.")
+
+if __name__ == "__main__":
+    main()
